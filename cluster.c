@@ -199,7 +199,13 @@ int remove_cluster(struct cluster_t *carr, int narr, int idx)
     assert(idx < narr);
     assert(narr > 0);
 
-    // TODO
+    narr -= 1;
+    for (int i = idx; i < narr; i++)
+    {
+        carr[i] = carr[i + 1];
+    }
+
+    return narr;
 }
 
 /*
@@ -372,6 +378,10 @@ int main(int argc, char *argv[])
         fputs("err", stderr);
         return 1;
     }
+
+    print_clusters(clusters, size);
+
+    size = remove_cluster(clusters, size, 3);
 
     print_clusters(clusters, size);
 
