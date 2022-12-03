@@ -7,8 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <math.h> // sqrtf
+#include <math.h>   // sqrtf
 #include <limits.h> // INT_MAX
+#include <string.h>
 
 /*****************************************************************
  * Ladici makra. Vypnout jejich efekt lze definici makra
@@ -28,7 +29,10 @@
 #define debug(s) printf("- %s\n", s)
 
 // vypise formatovany ladici vystup - pouziti podobne jako printf
-#define dfmt(s, ...) printf(" - "__FILE__":%u: "s"\n",__LINE__,__VA_ARGS__)
+#define dfmt(s, ...) printf(" - "__FILE__ \
+                            ":%u: "s      \
+                            "\n",         \
+                            __LINE__, __VA_ARGS__)
 
 // vypise ladici informaci o promenne - pouziti dint(identifikator_promenne)
 #define dint(i) printf(" - " __FILE__ ":%u: " #i " = %d\n", __LINE__, i)
@@ -52,13 +56,15 @@
  *      ukazatel na pole shluku.
  */
 
-struct obj_t {
+struct obj_t
+{
     int id;
     float x;
     float y;
 };
 
-struct cluster_t {
+struct cluster_t
+{
     int size;
     int capacity;
     struct obj_t *obj;
@@ -82,8 +88,23 @@ void init_cluster(struct cluster_t *c, int cap)
     assert(c != NULL);
     assert(cap >= 0);
 
-    // TODO
+    // c = malloc(sizeof(struct cluster_t));
 
+    /* if (c == NULL)
+    {
+        return;
+    } */
+
+    c->size = 0;
+    c->capacity = cap;
+
+    c->obj = malloc(sizeof(struct obj_t) * cap);
+
+    if (c->obj == NULL)
+    {
+        c->capacity = 0;
+        free(c);
+    }
 }
 
 /*
@@ -91,7 +112,8 @@ void init_cluster(struct cluster_t *c, int cap)
  */
 void clear_cluster(struct cluster_t *c)
 {
-    // TODO
+    free(c->obj);
+    init_cluster(c, 0);
 }
 
 /// Chunk of cluster objects. Value recommended for reallocation.
@@ -116,7 +138,7 @@ struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
     if (arr == NULL)
         return NULL;
 
-    c->obj = (struct obj_t*)arr;
+    c->obj = (struct obj_t *)arr;
     c->capacity = new_cap;
     return c;
 }
@@ -127,7 +149,18 @@ struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
  */
 void append_cluster(struct cluster_t *c, struct obj_t obj)
 {
-    // TODO
+    if (c->size + 1 > c->capacity)
+    {
+        c = resize_cluster(c, c->capacity + CLUSTER_CHUNK);
+    }
+
+    if (c == NULL)
+    {
+        return;
+    }
+
+    c->obj[c->size] = obj;
+    c->size++;
 }
 
 /*
@@ -172,7 +205,7 @@ float obj_distance(struct obj_t *o1, struct obj_t *o2)
     assert(o1 != NULL);
     assert(o2 != NULL);
 
-    // TODO
+    return (float)sqrt(pow((o1->x - o2->x), 2) + pow((o1->y - o2->y), 2));
 }
 
 /*
@@ -207,8 +240,10 @@ static int obj_sort_compar(const void *a, const void *b)
     // TUTO FUNKCI NEMENTE
     const struct obj_t *o1 = (const struct obj_t *)a;
     const struct obj_t *o2 = (const struct obj_t *)b;
-    if (o1->id < o2->id) return -1;
-    if (o1->id > o2->id) return 1;
+    if (o1->id < o2->id)
+        return -1;
+    if (o1->id > o2->id)
+        return 1;
     return 0;
 }
 
@@ -229,7 +264,8 @@ void print_cluster(struct cluster_t *c)
     // TUTO FUNKCI NEMENTE
     for (int i = 0; i < c->size; i++)
     {
-        if (i) putchar(' ');
+        if (i)
+            putchar(' ');
         printf("%d[%g,%g]", c->obj[i].id, c->obj[i].x, c->obj[i].y);
     }
     putchar('\n');
@@ -246,7 +282,64 @@ int load_clusters(char *filename, struct cluster_t **arr)
 {
     assert(arr != NULL);
 
-    // TODO
+    FILE *file;
+
+    file = fopen(filename, "r");
+
+    if (file == NULL)
+    {
+        return NULL;
+    }
+
+    char input[101];
+    char *count;
+
+    if (!fgets(input, 100, file))
+    {
+        return NULL;
+    }
+
+    strtok(input, "=");
+    count = strtok(NULL, "=");
+    int ccount;
+    sscanf(count, "%d", &ccount);
+
+    if (!(*arr = malloc(sizeof(struct cluster_t) * ccount)))
+    {
+        return NULL;
+    }
+
+    int i = 0;
+    while (i < ccount && fgets(input, 100, file))
+    {
+        init_cluster(&(*arr)[i], 1);
+
+        if (&(*arr)[i] == NULL)
+        {
+            return NULL;
+        }
+
+        struct obj_t obj;
+        int id, x, y;
+
+        char *token = strtok(input, " ");
+        sscanf(token, "%d", &id);
+        obj.id = id;
+
+        token = strtok(NULL, " ");
+        sscanf(token, "%d", &x);
+        obj.x = x;
+
+        token = strtok(NULL, " ");
+        sscanf(token, "%d", &y);
+        obj.y = y;
+
+        append_cluster(&(*arr)[i], obj);
+
+        i++;
+    }
+
+    return i;
 }
 
 /*
@@ -267,5 +360,16 @@ int main(int argc, char *argv[])
 {
     struct cluster_t *clusters;
 
-    // TODO
+    int size = load_clusters("objekty", &clusters);
+
+    if (clusters == NULL || size == NULL)
+    {
+        fputs("err", stderr);
+        return 1;
+    }
+
+    print_clusters(clusters, size);
+
+    // print_clusters(clusters, 1);
+    return 0;
 }
