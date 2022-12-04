@@ -388,6 +388,8 @@ int load_clusters(char *filename, struct cluster_t **arr)
         i++;
     }
 
+    fclose(file);
+
     return i;
 }
 
