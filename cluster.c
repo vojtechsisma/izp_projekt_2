@@ -1,9 +1,11 @@
 /**
- * Kostra programu pro 2. projekt IZP 2022/23
- *
- * Jednoducha shlukova analyza: 2D nejblizsi soused.
- * Single linkage
+ * @file cluster.c
+ * @author Vojtech Sisma (xsisma02@stud.fit.vutbr.cz)
+ * @brief IZP projekt 2. - Jednoducha shlukova analyza: 2D nejblizsi soused.
+ * @version 0.1
+ * @date 2022-12-04
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -85,10 +87,13 @@ struct config
  *
  */
 
-/*
- Inicializace shluku 'c'. Alokuje pamet pro cap objektu (kapacitu).
- Ukazatel NULL u pole objektu znamena kapacitu 0.
-*/
+/**
+ * @brief Inicializace shluku 'c'. Alokuje pamet pro cap objektu (kapacitu).
+ * Ukazatel NULL u pole objektu znamena kapacitu 0.
+ * 
+ * @param c shluk k inicializaci
+ * @param cap kapacita shluku
+ */
 void init_cluster(struct cluster_t *c, int cap)
 {
     assert(c != NULL);
@@ -105,8 +110,10 @@ void init_cluster(struct cluster_t *c, int cap)
     }
 }
 
-/*
- Odstraneni vsech objektu shluku a inicializace na prazdny shluk.
+/**
+ * @brief Uvolneni pameti a inicializace na prazdny shluk
+ * 
+ * @param c shluk pro odstraneni z pameti
  */
 void clear_cluster(struct cluster_t *c)
 {
@@ -114,6 +121,12 @@ void clear_cluster(struct cluster_t *c)
     init_cluster(c, 0);
 }
 
+/**
+ * @brief uvolneni pameti pole clusteru
+ * 
+ * @param carr pole clusteru
+ * @param narr pocet prvku v poli
+ */
 void clear_clusters(struct cluster_t *carr, int narr)
 {
     for (int i = 0; i < narr; i++)
@@ -127,8 +140,12 @@ void clear_clusters(struct cluster_t *carr, int narr)
 /* Chunk of cluster objects. Value recommended for reallocation. */
 const int CLUSTER_CHUNK = 10;
 
-/*
- Zmena kapacity shluku 'c' na kapacitu 'new_cap'.
+/**
+ * @brief Zmena kapacity shluku 'c' na kapacitu 'new_cap'.
+ * 
+ * @param c shluk pro zmenu
+ * @param new_cap nova kapacita
+ * @return struct cluster_t* pointer na shluk
  */
 struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
 {
@@ -151,9 +168,12 @@ struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
     return c;
 }
 
-/*
- Prida objekt 'obj' na konec shluku 'c'. Rozsiri shluk, pokud se do nej objekt
- nevejde.
+/**
+ * @brief Prida objekt 'obj' na konec shluku 'c'. Rozsiri shluk, pokud se do nej objekt
+ * nevejde.
+ * 
+ * @param c shluk do ktereho se pridava
+ * @param obj objekt pro pridani
  */
 void append_cluster(struct cluster_t *c, struct obj_t obj)
 {
@@ -176,10 +196,13 @@ void append_cluster(struct cluster_t *c, struct obj_t obj)
  */
 void sort_cluster(struct cluster_t *c);
 
-/*
- Do shluku 'c1' prida objekty 'c2'. Shluk 'c1' bude v pripade nutnosti rozsiren.
- Objekty ve shluku 'c1' budou serazeny vzestupne podle identifikacniho cisla.
- Shluk 'c2' bude nezmenen.
+/**
+ * @brief  Do shluku 'c1' prida objekty 'c2'. Shluk 'c1' bude v pripade nutnosti rozsiren.
+ * Objekty ve shluku 'c1' budou serazeny vzestupne podle identifikacniho cisla.
+ * Shluk 'c2' bude nezmenen.
+ * 
+ * @param c1 shluk 1
+ * @param c2 shluk 2
  */
 void merge_clusters(struct cluster_t *c1, struct cluster_t *c2)
 {
@@ -197,11 +220,16 @@ void merge_clusters(struct cluster_t *c1, struct cluster_t *c2)
 /**********************************************************************/
 /* Prace s polem shluku */
 
-/*
- Odstrani shluk z pole shluku 'carr'. Pole shluku obsahuje 'narr' polozek
- (shluku). Shluk pro odstraneni se nachazi na indexu 'idx'. Funkce vraci novy
- pocet shluku v poli.
-*/
+/**
+ * @brief  Odstrani shluk z pole shluku 'carr'. Pole shluku obsahuje 'narr' polozek
+ * (shluku). Shluk pro odstraneni se nachazi na indexu 'idx'. Funkce vraci novy
+ * pocet shluku v poli.
+ * 
+ * @param carr pole shluku
+ * @param narr pocet prvku v poli shluku
+ * @param idx index shluku pro odstraneni
+ * @return int pocet prvku v poli po odstraneni
+ */
 int remove_cluster(struct cluster_t *carr, int narr, int idx)
 {
     assert(idx < narr);
@@ -217,8 +245,12 @@ int remove_cluster(struct cluster_t *carr, int narr, int idx)
     return narr;
 }
 
-/*
- Pocita Euklidovskou vzdalenost mezi dvema objekty.
+/**
+ * @brief Pocita Euklidovskou vzdalenost mezi dvema objekty.
+ * 
+ * @param o1 objekt 1
+ * @param o2 objekt 2
+ * @return float vzdalenost mezi o1 a o2
  */
 float obj_distance(struct obj_t *o1, struct obj_t *o2)
 {
@@ -228,9 +260,13 @@ float obj_distance(struct obj_t *o1, struct obj_t *o2)
     return sqrtf(powf((o1->x - o2->x), 2) + powf((o1->y - o2->y), 2));
 }
 
-/*
- Pocita vzdalenost dvou shluku.
-*/
+/**
+ * @brief Pocita vzdalenost dvou shluku.
+ * 
+ * @param c1 shluk 1
+ * @param c2 shluk 2
+ * @return float vzdalenost shluku c1 a c2
+ */
 float cluster_distance(struct cluster_t *c1, struct cluster_t *c2)
 {
     assert(c1 != NULL);
@@ -255,12 +291,17 @@ float cluster_distance(struct cluster_t *c1, struct cluster_t *c2)
     return max_distance;
 }
 
-/*
- Funkce najde dva nejblizsi shluky. V poli shluku 'carr' o velikosti 'narr'
- hleda dva nejblizsi shluky. Nalezene shluky identifikuje jejich indexy v poli
- 'carr'. Funkce nalezene shluky (indexy do pole 'carr') uklada do pameti na
- adresu 'c1' resp. 'c2'.
-*/
+/**
+ * @brief Funkce najde dva nejblizsi shluky. V poli shluku 'carr' o velikosti 'narr'
+ * hleda dva nejblizsi shluky. Nalezene shluky identifikuje jejich indexy v poli
+ * 'carr'. Funkce nalezene shluky (indexy do pole 'carr') uklada do pameti na
+ * adresu 'c1' resp. 'c2'.
+ * 
+ * @param carr pole shluku
+ * @param narr pocet prvku v poli shluku
+ * @param c1 adresa shluku 1
+ * @param c2 adresa shluku 2
+ */
 void find_neighbours(struct cluster_t *carr, int narr, int *c1, int *c2)
 {
     assert(narr > 0);
@@ -272,6 +313,7 @@ void find_neighbours(struct cluster_t *carr, int narr, int *c1, int *c2)
         {
             float distance = cluster_distance(&carr[i], &carr[j]);
 
+            // pokud je min distance < 0, jeste neni nastavena
             if (distance < min_distance || min_distance < 0)
             {
                 *c1 = i;
@@ -282,7 +324,13 @@ void find_neighbours(struct cluster_t *carr, int narr, int *c1, int *c2)
     }
 }
 
-// pomocna funkce pro razeni shluku
+/**
+ * @brief pomocna funkce pro razeni shluku
+ * 
+ * @param a 
+ * @param b 
+ * @return int 
+ */
 static int obj_sort_compar(const void *a, const void *b)
 {
     // TUTO FUNKCI NEMENTE
@@ -295,18 +343,22 @@ static int obj_sort_compar(const void *a, const void *b)
     return 0;
 }
 
-/*
- Razeni objektu ve shluku vzestupne podle jejich identifikatoru.
-*/
+/**
+ * @brief Razeni objektu ve shluku vzestupne podle jejich identifikatoru.
+ * 
+ * @param c shluk pro serazeni
+ */
 void sort_cluster(struct cluster_t *c)
 {
     // TUTO FUNKCI NEMENTE
     qsort(c->obj, c->size, sizeof(struct obj_t), &obj_sort_compar);
 }
 
-/*
- Tisk shluku 'c' na stdout.
-*/
+/**
+ * @brief Tisk shluku 'c' na stdout.
+ * 
+ * @param c shluk pro vytisk
+ */
 void print_cluster(struct cluster_t *c)
 {
     // TUTO FUNKCI NEMENTE
@@ -319,13 +371,17 @@ void print_cluster(struct cluster_t *c)
     putchar('\n');
 }
 
-/*
- Ze souboru 'filename' nacte objekty. Pro kazdy objekt vytvori shluk a ulozi
- jej do pole shluku. Alokuje prostor pro pole vsech shluku a ukazatel na prvni
- polozku pole (ukalazatel na prvni shluk v alokovanem poli) ulozi do pameti,
- kam se odkazuje parametr 'arr'. Funkce vraci pocet nactenych objektu (shluku).
- V pripade nejake chyby uklada do pameti, kam se odkazuje 'arr', hodnotu NULL.
-*/
+/**
+ * @brief Ze souboru 'filename' nacte objekty. Pro kazdy objekt vytvori shluk a ulozi
+ * jej do pole shluku. Alokuje prostor pro pole vsech shluku a ukazatel na prvni
+ * polozku pole (ukalazatel na prvni shluk v alokovanem poli) ulozi do pameti,
+ * kam se odkazuje parametr 'arr'. Funkce vraci pocet nactenych objektu (shluku).
+ * V pripade nejake chyby uklada do pameti, kam se odkazuje 'arr', hodnotu NULL.
+ * 
+ * @param filename nazev souboru se shluky
+ * @param arr pole shluku
+ * @return int pocet nactenych objektu
+ */
 int load_clusters(char *filename, struct cluster_t **arr)
 {
     assert(arr != NULL);
@@ -342,6 +398,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
     char input[101];
     char *count;
 
+    // ziskani poctu objektu
     if (!fgets(input, 100, file))
     {
         return -1;
@@ -352,6 +409,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
     int c_count;
     sscanf(count, "%d", &c_count);
 
+    // alokace pameti pro pole clusteru
     if (!(*arr = malloc(sizeof(struct cluster_t) * c_count)))
     {
         return -1;
@@ -371,6 +429,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
         struct obj_t obj;
         int id, x, y;
 
+        // nastaveni vlastnosti objektu ze souboru
         char *token = strtok(input, " ");
         sscanf(token, "%d", &id);
         obj.id = id;
@@ -383,6 +442,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
         sscanf(token, "%d", &y);
         obj.y = y;
 
+        // pridani clusteru do pole
         append_cluster(&(*arr)[i], obj);
 
         i++;
@@ -393,11 +453,12 @@ int load_clusters(char *filename, struct cluster_t **arr)
     return i;
 }
 
-/*
- Tisk pole shluku. Parametr 'carr' je ukazatel na prvni polozku (shluk).
- Tiskne se prvnich 'narr' shluku.
-*/
-
+/**
+ * @brief Tisk pole shluku.
+ * 
+ * @param carr ukazatel na prvni polozku (shluk)
+ * @param narr pocet shluku k vytisknuti
+ */
 void print_clusters(struct cluster_t *carr, int narr)
 {
     printf("Clusters:\n");
@@ -410,10 +471,11 @@ void print_clusters(struct cluster_t *carr, int narr)
 
 /**
  * @brief spojuje clustery dokud neni v poli pozadovany pocet clusteru
+ * 
  * @param carr pole shluku
  * @param narr pocet clusteru v poli
  * @param size cilova velikost pole
- * @return nova velikost pole
+ * @return int nova velikost pole
  */
 int compute_required_size(struct cluster_t *carr, int narr, int size)
 {
@@ -437,6 +499,13 @@ int compute_required_size(struct cluster_t *carr, int narr, int size)
     return narr;
 }
 
+/**
+ * @brief kontrola a nastaveni argumentu
+ * 
+ * @param config struktura pro ulozeni parametru
+ * @param argc pocet argumentu
+ * @param argv pole argumentu
+ */
 void process_args(struct config *config, int argc, char *argv[])
 {
     config->count = 1;
@@ -456,6 +525,11 @@ void process_args(struct config *config, int argc, char *argv[])
     }
 }
 
+/**
+ * @brief Zobrazuje err hlasky
+ *
+ * @param error_code kod chyby
+ */
 void process_error(int error_code)
 {
     switch (error_code)
@@ -489,6 +563,7 @@ int main(int argc, char *argv[])
 
     struct cluster_t *clusters;
 
+    // nacteni clusteru
     int size = load_clusters(config.filename, &clusters);
 
     if (clusters == NULL || size < 1)
@@ -497,6 +572,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // uprava na pozadovanou velikost
     size = compute_required_size(clusters, size, config.count);
 
     if (size < 1)
@@ -505,6 +581,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // vypis clusteru
     print_clusters(clusters, size);
 
     clear_clusters(clusters, size);
