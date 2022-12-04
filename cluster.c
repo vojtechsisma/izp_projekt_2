@@ -207,6 +207,7 @@ int remove_cluster(struct cluster_t *carr, int narr, int idx)
     assert(idx < narr);
     assert(narr > 0);
 
+	clear_cluster(&carr[idx]);
     narr -= 1;
     for (int i = idx; i < narr; i++)
     {
