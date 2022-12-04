@@ -97,7 +97,7 @@ void init_cluster(struct cluster_t *c, int cap)
     c->size = 0;
     c->capacity = cap;
 
-    c->obj = malloc(sizeof(struct obj_t) * cap);
+    c->obj = cap > 0 ? malloc(sizeof(struct obj_t) * cap) : NULL;
 
     if (c->obj == NULL)
     {
@@ -422,7 +422,7 @@ int compute_required_size(struct cluster_t *carr, int narr, int size)
         find_neighbours(carr, narr, &c1, &c2);
         prev_c1_size = carr[c1].size;
         merge_clusters(&carr[c1], &carr[c2]);
-        
+
         if (carr[c1].size != prev_c1_size + carr[c2].size)
         {
             clear_clusters(carr, narr);
