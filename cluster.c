@@ -90,7 +90,7 @@ struct config
 /**
  * @brief Inicializace shluku 'c'. Alokuje pamet pro cap objektu (kapacitu).
  * Ukazatel NULL u pole objektu znamena kapacitu 0.
- * 
+ *
  * @param c shluk k inicializaci
  * @param cap kapacita shluku
  */
@@ -112,7 +112,7 @@ void init_cluster(struct cluster_t *c, int cap)
 
 /**
  * @brief Uvolneni pameti a inicializace na prazdny shluk
- * 
+ *
  * @param c shluk pro odstraneni z pameti
  */
 void clear_cluster(struct cluster_t *c)
@@ -123,7 +123,7 @@ void clear_cluster(struct cluster_t *c)
 
 /**
  * @brief uvolneni pameti pole clusteru
- * 
+ *
  * @param carr pole clusteru
  * @param narr pocet prvku v poli
  */
@@ -142,7 +142,7 @@ const int CLUSTER_CHUNK = 10;
 
 /**
  * @brief Zmena kapacity shluku 'c' na kapacitu 'new_cap'.
- * 
+ *
  * @param c shluk pro zmenu
  * @param new_cap nova kapacita
  * @return struct cluster_t* pointer na shluk
@@ -171,7 +171,7 @@ struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
 /**
  * @brief Prida objekt 'obj' na konec shluku 'c'. Rozsiri shluk, pokud se do nej objekt
  * nevejde.
- * 
+ *
  * @param c shluk do ktereho se pridava
  * @param obj objekt pro pridani
  */
@@ -200,7 +200,7 @@ void sort_cluster(struct cluster_t *c);
  * @brief  Do shluku 'c1' prida objekty 'c2'. Shluk 'c1' bude v pripade nutnosti rozsiren.
  * Objekty ve shluku 'c1' budou serazeny vzestupne podle identifikacniho cisla.
  * Shluk 'c2' bude nezmenen.
- * 
+ *
  * @param c1 shluk 1
  * @param c2 shluk 2
  */
@@ -224,7 +224,7 @@ void merge_clusters(struct cluster_t *c1, struct cluster_t *c2)
  * @brief  Odstrani shluk z pole shluku 'carr'. Pole shluku obsahuje 'narr' polozek
  * (shluku). Shluk pro odstraneni se nachazi na indexu 'idx'. Funkce vraci novy
  * pocet shluku v poli.
- * 
+ *
  * @param carr pole shluku
  * @param narr pocet prvku v poli shluku
  * @param idx index shluku pro odstraneni
@@ -247,7 +247,7 @@ int remove_cluster(struct cluster_t *carr, int narr, int idx)
 
 /**
  * @brief Pocita Euklidovskou vzdalenost mezi dvema objekty.
- * 
+ *
  * @param o1 objekt 1
  * @param o2 objekt 2
  * @return float vzdalenost mezi o1 a o2
@@ -262,7 +262,7 @@ float obj_distance(struct obj_t *o1, struct obj_t *o2)
 
 /**
  * @brief Pocita vzdalenost dvou shluku.
- * 
+ *
  * @param c1 shluk 1
  * @param c2 shluk 2
  * @return float vzdalenost shluku c1 a c2
@@ -274,21 +274,22 @@ float cluster_distance(struct cluster_t *c1, struct cluster_t *c2)
     assert(c2 != NULL);
     assert(c2->size > 0);
 
-    float distance, max_distance = 0.0;
+    float distance, min_distance = obj_distance(c1->obj, c2->obj);
+
     for (int i = 0; i < c1->size; i++)
     {
         for (int j = 0; j < c2->size; j++)
         {
             distance = obj_distance(&c1->obj[i], &c2->obj[j]);
 
-            if (distance > max_distance)
+            if (min_distance > distance)
             {
-                max_distance = distance;
+                min_distance = distance;
             }
         }
     }
 
-    return max_distance;
+    return min_distance;
 }
 
 /**
@@ -296,7 +297,7 @@ float cluster_distance(struct cluster_t *c1, struct cluster_t *c2)
  * hleda dva nejblizsi shluky. Nalezene shluky identifikuje jejich indexy v poli
  * 'carr'. Funkce nalezene shluky (indexy do pole 'carr') uklada do pameti na
  * adresu 'c1' resp. 'c2'.
- * 
+ *
  * @param carr pole shluku
  * @param narr pocet prvku v poli shluku
  * @param c1 adresa shluku 1
@@ -306,15 +307,15 @@ void find_neighbours(struct cluster_t *carr, int narr, int *c1, int *c2)
 {
     assert(narr > 0);
 
-    float min_distance = -1;
+    float distance, min_distance = cluster_distance(carr, &carr[1]);
     for (int i = 0; i < narr; i++)
     {
         for (int j = i + 1; j < narr; j++)
         {
-            float distance = cluster_distance(&carr[i], &carr[j]);
+            distance = cluster_distance(&carr[i], &carr[j]);
 
-            // pokud je min distance < 0, jeste neni nastavena
-            if (distance < min_distance || min_distance < 0)
+            // porovnani vzdalenosti
+            if (distance <= min_distance)
             {
                 *c1 = i;
                 *c2 = j;
@@ -326,10 +327,10 @@ void find_neighbours(struct cluster_t *carr, int narr, int *c1, int *c2)
 
 /**
  * @brief pomocna funkce pro razeni shluku
- * 
- * @param a 
- * @param b 
- * @return int 
+ *
+ * @param a
+ * @param b
+ * @return int
  */
 static int obj_sort_compar(const void *a, const void *b)
 {
@@ -345,7 +346,7 @@ static int obj_sort_compar(const void *a, const void *b)
 
 /**
  * @brief Razeni objektu ve shluku vzestupne podle jejich identifikatoru.
- * 
+ *
  * @param c shluk pro serazeni
  */
 void sort_cluster(struct cluster_t *c)
@@ -356,7 +357,7 @@ void sort_cluster(struct cluster_t *c)
 
 /**
  * @brief Tisk shluku 'c' na stdout.
- * 
+ *
  * @param c shluk pro vytisk
  */
 void print_cluster(struct cluster_t *c)
@@ -377,7 +378,7 @@ void print_cluster(struct cluster_t *c)
  * polozku pole (ukalazatel na prvni shluk v alokovanem poli) ulozi do pameti,
  * kam se odkazuje parametr 'arr'. Funkce vraci pocet nactenych objektu (shluku).
  * V pripade nejake chyby uklada do pameti, kam se odkazuje 'arr', hodnotu NULL.
- * 
+ *
  * @param filename nazev souboru se shluky
  * @param arr pole shluku
  * @return int pocet nactenych objektu
@@ -455,7 +456,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
 
 /**
  * @brief Tisk pole shluku.
- * 
+ *
  * @param carr ukazatel na prvni polozku (shluk)
  * @param narr pocet shluku k vytisknuti
  */
@@ -471,7 +472,7 @@ void print_clusters(struct cluster_t *carr, int narr)
 
 /**
  * @brief spojuje clustery dokud neni v poli pozadovany pocet clusteru
- * 
+ *
  * @param carr pole shluku
  * @param narr pocet clusteru v poli
  * @param size cilova velikost pole
@@ -501,7 +502,7 @@ int compute_required_size(struct cluster_t *carr, int narr, int size)
 
 /**
  * @brief kontrola a nastaveni argumentu
- * 
+ *
  * @param config struktura pro ulozeni parametru
  * @param argc pocet argumentu
  * @param argv pole argumentu
