@@ -207,7 +207,7 @@ int remove_cluster(struct cluster_t *carr, int narr, int idx)
     assert(idx < narr);
     assert(narr > 0);
 
-	clear_cluster(&carr[idx]);
+    clear_cluster(&carr[idx]);
     narr -= 1;
     for (int i = idx; i < narr; i++)
     {
@@ -415,12 +415,20 @@ void print_clusters(struct cluster_t *carr, int narr)
  */
 int compute_required_size(struct cluster_t *carr, int narr, int size)
 {
-    int c1, c2;
+    int c1, c2, prev_c1_size;
 
     while (narr > size)
     {
+        prev_c1_size = carr[c1].size;
         find_neighbours(carr, narr, &c1, &c2);
         merge_clusters(&carr[c1], &carr[c2]);
+        
+        if (carr[c1].size != prev_c1_size + carr[c2].size)
+        {
+            clear_clusters(carr, narr);
+            return -1;
+        }
+
         narr = remove_cluster(carr, narr, c2);
     }
 
@@ -488,6 +496,12 @@ int main(int argc, char *argv[])
     }
 
     size = compute_required_size(clusters, size, config.count);
+
+    if (size < 1)
+    {
+        process_error(size);
+        return 1;
+    }
 
     print_clusters(clusters, size);
 
