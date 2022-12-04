@@ -70,6 +70,12 @@ struct cluster_t
     struct obj_t *obj;
 };
 
+struct config
+{
+    char *filename;
+    int count;
+};
+
 /*****************************************************************
  * Deklarace potrebnych funkci.
  *
@@ -88,13 +94,6 @@ void init_cluster(struct cluster_t *c, int cap)
     assert(c != NULL);
     assert(cap >= 0);
 
-    // c = malloc(sizeof(struct cluster_t));
-
-    /* if (c == NULL)
-    {
-        return;
-    } */
-
     c->size = 0;
     c->capacity = cap;
 
@@ -103,7 +102,6 @@ void init_cluster(struct cluster_t *c, int cap)
     if (c->obj == NULL)
     {
         c->capacity = 0;
-        free(c);
     }
 }
 
@@ -116,7 +114,7 @@ void clear_cluster(struct cluster_t *c)
     init_cluster(c, 0);
 }
 
-/// Chunk of cluster objects. Value recommended for reallocation.
+* Chunk of cluster objects. Value recommended for reallocation.
 const int CLUSTER_CHUNK = 10;
 
 /*
@@ -216,7 +214,7 @@ float obj_distance(struct obj_t *o1, struct obj_t *o2)
     assert(o1 != NULL);
     assert(o2 != NULL);
 
-    return (float)sqrt(pow((o1->x - o2->x), 2) + pow((o1->y - o2->y), 2));
+    return sqrtf(powf((o1->x - o2->x), 2) + powf((o1->y - o2->y), 2));
 }
 
 /*
@@ -229,7 +227,21 @@ float cluster_distance(struct cluster_t *c1, struct cluster_t *c2)
     assert(c2 != NULL);
     assert(c2->size > 0);
 
-    // TODO
+    float distance, max_distance = 0.0;
+    for (int i = 0; i < c1->size; i++)
+    {
+        for (int j = 0; j < c2->size; j++)
+        {
+            distance = obj_distance(&c1->obj[i], &c2->obj[j]);
+
+            if (distance > max_distance)
+            {
+                max_distance = distance;
+            }
+        }
+    }
+
+    return max_distance;
 }
 
 /*
@@ -242,7 +254,21 @@ void find_neighbours(struct cluster_t *carr, int narr, int *c1, int *c2)
 {
     assert(narr > 0);
 
-    // TODO
+    float min_distance = -1;
+    for (int i = 0; i < narr; i++)
+    {
+        for (int j = i + 1; j < narr; j++)
+        {
+            float distance = cluster_distance(&carr[i], &carr[j]);
+
+            if (distance < min_distance || min_distance < 0)
+            {
+                *c1 = i;
+                *c2 = j;
+                min_distance = distance;
+            }
+        }
+    }
 }
 
 // pomocna funkce pro razeni shluku
@@ -299,7 +325,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
 
     if (file == NULL)
     {
-        return NULL;
+        return -2;
     }
 
     char input[101];
@@ -307,27 +333,27 @@ int load_clusters(char *filename, struct cluster_t **arr)
 
     if (!fgets(input, 100, file))
     {
-        return NULL;
+        return -1;
     }
 
     strtok(input, "=");
     count = strtok(NULL, "=");
-    int ccount;
-    sscanf(count, "%d", &ccount);
+    int c_count;
+    sscanf(count, "%d", &c_count);
 
-    if (!(*arr = malloc(sizeof(struct cluster_t) * ccount)))
+    if (!(*arr = malloc(sizeof(struct cluster_t) * c_count)))
     {
-        return NULL;
+        return -1;
     }
 
     int i = 0;
-    while (i < ccount && fgets(input, 100, file))
+    while (i < c_count && fgets(input, 100, file))
     {
         init_cluster(&(*arr)[i], 1);
 
         if (&(*arr)[i] == NULL)
         {
-            return NULL;
+            return -1;
         }
 
         struct obj_t obj;
@@ -357,6 +383,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
  Tisk pole shluku. Parametr 'carr' je ukazatel na prvni polozku (shluk).
  Tiskne se prvnich 'narr' shluku.
 */
+
 void print_clusters(struct cluster_t *carr, int narr)
 {
     printf("Clusters:\n");
@@ -367,24 +394,90 @@ void print_clusters(struct cluster_t *carr, int narr)
     }
 }
 
+/**
+* @brief spojuje clustery dokud neni v poli pozadovany pocet clusteru
+* @param carr pole shluku
+* @param narr pocet clusteru v poli
+* @param size cilova velikost pole
+* @return nova velikost pole
+*/
+int compute_required_size(struct cluster_t *carr, int narr, int size)
+{
+    int c1, c2;
+
+    while (narr > size)
+    {
+        find_neighbours(carr, narr, &c1, &c2);
+        merge_clusters(&carr[c1], &carr[c2]);
+        narr = remove_cluster(carr, narr, c2);
+    }
+
+    return narr;
+}
+
+void process_args(struct config *config, int argc, char *argv[])
+{
+    config->count = 1;
+
+    if (argc == 2)
+    {
+        config->filename = argv[1];
+    }
+    else if (argc == 3)
+    {
+        config->filename = argv[1];
+        sscanf(argv[2], "%d", &config->count);
+    }
+    else
+    {
+        config->count = -3;
+    }
+}
+
+void process_error(int error_code)
+{
+    switch (error_code)
+    {
+    case -1:
+        fputs("Alocation error\n", stderr);
+        break;
+    case -2:
+        fputs("File read error\n", stderr);
+        break;
+    case -3:
+        fputs("Invalid arguments\n", stderr);
+        break;
+    default:
+        fputs("Error\\n", stderr);
+        break;
+    }
+}
+
 int main(int argc, char *argv[])
 {
-    struct cluster_t *clusters;
+    struct config config;
 
-    int size = load_clusters("objekty", &clusters);
+    process_args(&config, argc, argv);
 
-    if (clusters == NULL || size == NULL)
+    if (config.count == -3)
     {
-        fputs("err", stderr);
+        process_error(config.count);
         return 1;
     }
 
+    struct cluster_t *clusters;
+
+    int size = load_clusters(config.filename, &clusters);
+
+    if (clusters == NULL || size < 1)
+    {
+        process_error(size);
+        return 1;
+    }
+
+    size = compute_required_size(clusters, size, config.count);
+
     print_clusters(clusters, size);
 
-    size = remove_cluster(clusters, size, 3);
-
-    print_clusters(clusters, size);
-
-    // print_clusters(clusters, 1);
     return 0;
 }
