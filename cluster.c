@@ -114,7 +114,7 @@ void clear_cluster(struct cluster_t *c)
     init_cluster(c, 0);
 }
 
-void clear_clusters(struct cluster_t **carr, int narr)
+void clear_clusters(struct cluster_t *carr, int narr)
 {
     for (int i = 0; i < narr; i++)
     {
@@ -363,7 +363,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
 
         if (&(*arr)[i] == NULL)
         {
-            clear_clusters(arr, i + 1);
+            clear_clusters(*arr, i + 1);
             return -1;
         }
 
