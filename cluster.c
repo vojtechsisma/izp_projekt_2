@@ -114,6 +114,16 @@ void clear_cluster(struct cluster_t *c)
     init_cluster(c, 0);
 }
 
+void clear_clusters(struct cluster_t **carr, int narr)
+{
+    for (int i = 0; i < narr; i++)
+    {
+        clear_cluster(&carr[i]);
+    }
+
+    free(carr);
+}
+
 /* Chunk of cluster objects. Value recommended for reallocation. */
 const int CLUSTER_CHUNK = 10;
 
@@ -353,6 +363,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
 
         if (&(*arr)[i] == NULL)
         {
+            clear_clusters(arr, i + 1);
             return -1;
         }
 
@@ -478,6 +489,8 @@ int main(int argc, char *argv[])
     size = compute_required_size(clusters, size, config.count);
 
     print_clusters(clusters, size);
+
+    clear_clusters(clusters, size);
 
     return 0;
 }
