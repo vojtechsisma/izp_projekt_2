@@ -114,7 +114,7 @@ void clear_cluster(struct cluster_t *c)
     init_cluster(c, 0);
 }
 
-* Chunk of cluster objects. Value recommended for reallocation.
+/* Chunk of cluster objects. Value recommended for reallocation. */
 const int CLUSTER_CHUNK = 10;
 
 /*
@@ -395,12 +395,12 @@ void print_clusters(struct cluster_t *carr, int narr)
 }
 
 /**
-* @brief spojuje clustery dokud neni v poli pozadovany pocet clusteru
-* @param carr pole shluku
-* @param narr pocet clusteru v poli
-* @param size cilova velikost pole
-* @return nova velikost pole
-*/
+ * @brief spojuje clustery dokud neni v poli pozadovany pocet clusteru
+ * @param carr pole shluku
+ * @param narr pocet clusteru v poli
+ * @param size cilova velikost pole
+ * @return nova velikost pole
+ */
 int compute_required_size(struct cluster_t *carr, int narr, int size)
 {
     int c1, c2;
