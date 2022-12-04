@@ -419,8 +419,8 @@ int compute_required_size(struct cluster_t *carr, int narr, int size)
 
     while (narr > size)
     {
-        prev_c1_size = carr[c1].size;
         find_neighbours(carr, narr, &c1, &c2);
+        prev_c1_size = carr[c1].size;
         merge_clusters(&carr[c1], &carr[c2]);
         
         if (carr[c1].size != prev_c1_size + carr[c2].size)
