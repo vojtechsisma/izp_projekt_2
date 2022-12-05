@@ -2,7 +2,6 @@ var NAVTREEINDEX0 =
 {
 "annotated.html":[1,0],
 "classes.html":[1,1],
-"classtest_1_1_tester.html":[1,0,0,0],
 "cluster_8c.html":[2,0,0],
 "cluster_8c.html#a12718af9e3e31b61bf703ec260e22450":[2,0,0,19],
 "cluster_8c.html#a322bfd43ab7a3fa830cd69e79b7eef06":[2,0,0,13],
@@ -27,7 +26,7 @@ var NAVTREEINDEX0 =
 "index.html":[],
 "md___users_vojtechsisma__documents_skola_izp_projekt_2__r_e_a_d_m_e.html":[0],
 "pages.html":[],
-"structcluster__t.html":[1,0,1],
-"structconfig.html":[1,0,2],
-"structobj__t.html":[1,0,3]
+"structcluster__t.html":[1,0,0],
+"structconfig.html":[1,0,1],
+"structobj__t.html":[1,0,2]
 };
