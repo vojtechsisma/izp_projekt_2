@@ -410,7 +410,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
     int c_count;
     int result = sscanf(count, "%d", &c_count);
 
-    if (result == 0)
+    if (result == 0 || c_count < 0)
     {
         return -4;
     }
