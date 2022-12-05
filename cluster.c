@@ -428,19 +428,40 @@ int load_clusters(char *filename, struct cluster_t **arr)
         }
 
         struct obj_t obj;
-        int id, x, y;
+        int id, x, y, result;
 
         // nastaveni vlastnosti objektu ze souboru
         char *token = strtok(input, " ");
-        sscanf(token, "%d", &id);
+        result = sscanf(token, "%d", &id);
+
+        // kontrola vstupu ze souboru
+        if (result == 0 || (int)strlen(token) != (int)floor(log10(abs(id))) + 1)
+        {
+            return -4;
+        }
+
         obj.id = id;
 
         token = strtok(NULL, " ");
-        sscanf(token, "%d", &x);
+        result = sscanf(token, "%d", &x);
+
+        // kontrola vstupu ze souboru
+        if (result == 0 || (int)strlen(token) != (int)floor(log10(abs(x))) + 1 || x < 0 || x > 1000)
+        {
+            return -4;
+        }
+
         obj.x = x;
 
         token = strtok(NULL, " ");
-        sscanf(token, "%d", &y);
+        result = sscanf(token, "%d", &y);
+
+        // kontrola vstupu ze souboru
+        if (result == 0 || (int)strcspn(token, "\n") != (int)floor(log10(abs(y))) + 1 || y < 0 || y > 1000)
+        {
+            return -4;
+        }
+
         obj.y = y;
 
         // pridani clusteru do pole
@@ -518,7 +539,13 @@ void process_args(struct config *config, int argc, char *argv[])
     else if (argc == 3)
     {
         config->filename = argv[1];
-        sscanf(argv[2], "%d", &config->count);
+        int result = sscanf(argv[2], "%d", &config->count);
+
+        // kontrola parametru cisla
+        if (result == 0 || (int)strlen(argv[2]) != (int)floor(log10(abs(config->count))) + 1)
+        {
+            config->count = -3;
+        }
     }
     else
     {
@@ -544,8 +571,11 @@ void process_error(int error_code)
     case -3:
         fputs("Invalid arguments\n", stderr);
         break;
+    case -4:
+        fputs("Input format error\n", stderr);
+        break;
     default:
-        fputs("Error\\n", stderr);
+        fputs("Error\n", stderr);
         break;
     }
 }
