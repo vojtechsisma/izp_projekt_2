@@ -408,7 +408,12 @@ int load_clusters(char *filename, struct cluster_t **arr)
     strtok(input, "=");
     count = strtok(NULL, "=");
     int c_count;
-    sscanf(count, "%d", &c_count);
+    int result = sscanf(count, "%d", &c_count);
+
+    if (result == 0)
+    {
+        return -4;
+    }
 
     // alokace pameti pro pole clusteru
     if (!(*arr = malloc(sizeof(struct cluster_t) * c_count)))
