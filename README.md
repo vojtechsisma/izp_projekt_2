@@ -2,7 +2,7 @@
 
 [Zadání](zadani.pdf)
 
-[Dokumentace](https://vojtechsisma.eu/izp_projekt_2/doxygen/html)
+[Dokumentace](https://vojtechsisma.github.io/izp_projekt_2/)
 
 [Hodnocení](hodnoceni.txt)
 
