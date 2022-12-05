@@ -600,7 +600,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    struct cluster_t *clusters;
+    struct cluster_t *clusters = NULL;
 
     // nacteni clusteru
     int size = load_clusters(config.filename, &clusters);
