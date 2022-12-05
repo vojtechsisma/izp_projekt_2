@@ -437,6 +437,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
         // kontrola vstupu ze souboru
         if (result == 0 || (int)strlen(token) != (int)floor(log10(abs(id))) + 1)
         {
+            clear_clusters(*arr, i + 1);
             return -4;
         }
 
@@ -448,6 +449,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
         // kontrola vstupu ze souboru
         if (result == 0 || (int)strlen(token) != (int)floor(log10(abs(x))) + 1 || x < 0 || x > 1000)
         {
+            clear_clusters(*arr, i + 1);
             return -4;
         }
 
@@ -459,6 +461,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
         // kontrola vstupu ze souboru
         if (result == 0 || (int)strcspn(token, "\n") != (int)floor(log10(abs(y))) + 1 || y < 0 || y > 1000)
         {
+            clear_clusters(*arr, i + 1);
             return -4;
         }
 
