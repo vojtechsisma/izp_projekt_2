@@ -4,7 +4,7 @@
 
 [Dokumentace](https://vojtechsisma.github.io/izp_projekt_2/)
 
-[Hodnocení](hodnoceni.txt)
+[Hodnocení](hodnoceni.txt) - 13.4/14
 
 Spuštění 
 ```
