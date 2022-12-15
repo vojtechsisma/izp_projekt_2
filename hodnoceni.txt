@@ -1,0 +1,51 @@
+13.4: celkem bodu
+
+====== Prehled hodnoceni ==========
+2: Obhajoba reseni projektu (samostatny projev, chapani kodu, odpovidani na dotazy, ...)
+3.1: Vhodnost reseni (odsazeni, nazvy promennych, magicka cisla, globalni promenne, rozdeleni podproblemu na funkce, logicky strukturovany kod, vyuziti vhodnych funkci ...)
+1.4: Komentare (popis jednotlivych funkci, promennych, dulezitych casti, ...)
+0: Neznamene identifikatory (globalni promenne nebo funkce)
+1:ok: nacteni a vypis jedineho shluku
+1:ok: nacteni a vypis 20 shluku
+1:ok: jedna iterace shlukovani nad dvema objekty
+1:ok: jedna iterace shlukovani nad 20 objekty
+0.4:ok: 10 shluku
+0.4:ok: 7 shluku
+0.4:ok: 3 shluky
+1.2: absence pametovych chyb
+0.1:ok: reakce na neexistujici soubor
+0:chyba: reakce na spatny obsah souboru 1
+0.1:ok: reakce na spatny obsah souboru 2
+0.1:ok: reakce na chybejici argumenty
+0.1:ok: reakce na spatny 2. argument
+0.1:ok: reakce na spatny pocet cilovych shluku
+
+====== Log z prekladu =============
+Ok
+
+====== Analyza kodu ===============
+0: Neznamene identifikatory (globalni promenne nebo funkce)
+# cluster.c:510: compute_required_size
+# cluster.c:539: process_args
+# cluster.c:569: process_error
+
+====== Log z jednotlivych testu ===
+1:ok: nacteni a vypis jedineho shluku
+1:ok: nacteni a vypis 20 shluku
+1:ok: jedna iterace shlukovani nad dvema objekty
+1:ok: jedna iterace shlukovani nad 20 objekty
+0.4:ok: 10 shluku
+0.4:ok: 7 shluku
+0.4:ok: 3 shluky
+1.2: absence pametovych chyb
+0.1:ok: reakce na neexistujici soubor
+# File read error
+0:chyba: reakce na spatny obsah souboru 1
+0.1:ok: reakce na spatny obsah souboru 2
+# Input format error
+0.1:ok: reakce na chybejici argumenty
+# Invalid arguments
+0.1:ok: reakce na spatny 2. argument
+# Invalid arguments
+0.1:ok: reakce na spatny pocet cilovych shluku
+# Invalid arguments
